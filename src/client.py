@@ -1,6 +1,7 @@
 """Client for echo server."""
 
 import socket
+import sys
 
 
 def create_client_socket(message):
@@ -15,3 +16,7 @@ def create_client_socket(message):
         print("Connection Refused")
 
 create_client_socket("12345678")
+
+
+# if __name__ == "__main__":
+#     create_client_socket(sys.argv[0])
