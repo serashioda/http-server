@@ -14,4 +14,4 @@ def create_client_socket(message):
     except ConnectionRefusedError:
         print("Connection Refused")
 
-create_client_socket("ssage")
+create_client_socket("12345678")
