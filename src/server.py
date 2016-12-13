@@ -24,10 +24,7 @@ def build_server():
                     print("end msg")
                     break
             print(msg)
-            try:
-                server.sendall(msg.encode('utf8'))
-            except ConnectionRefusedError:
-                print("Connection Refused")
+            conn.sendall(msg.encode('utf8'))
 
         except KeyboardInterrupt:
             server.close()
