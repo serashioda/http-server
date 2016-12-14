@@ -26,7 +26,7 @@ def build_server():
                     print("end msg")
                     break
             print(msg)
-            # conn.sendall(msg.encode('utf8'))
+            conn.sendall(msg.encode('utf8'))
 
         except KeyboardInterrupt:
             server.close()

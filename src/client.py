@@ -11,21 +11,19 @@ def create_client_socket(message):
     client = socket.socket(*stream_info[:3])
     try:
         client.connect(stream_info[-1])
-        message += "Disconnect"
+        message += "DISCONNECT"
         client.sendall(message.encode('utf8'))
     except ConnectionRefusedError:
         print("Connection Refused")
     buffer_length = 8
     reply_complete = False
     msg = ''
-    while not reply_complete:
-        print("im here")
-        part = client.recv(buffer_length)
-        print("im not here")
-        msg += part.decode('utf8')
-        if len(part) < buffer_length:
-            break
-    print(msg)
+    while msg[-10:] != "DISCONNECT":
+        print("listening")
+        msg += client.recv(buffer_length).decode('utf8')
+        print("message received")
+    print(msg[:-10])
+    client.close()
 
 create_client_socket("12345678")
 
