@@ -13,6 +13,7 @@ def build_server():
     server.listen(1)
 
     while True:
+        print("Server listening on port ", address[1], "...")
         try:
             conn, addr = server.accept()
             buffer_length = 8
@@ -20,10 +21,8 @@ def build_server():
             msg = ""
             while not message_complete:
                 part = conn.recv(buffer_length)
-                print(len(part))
                 msg += part.decode('utf8')
                 if len(part) < buffer_length:
-                    print("end msg")
                     break
             print(msg)
             conn.sendall(msg.encode('utf8'))
@@ -32,4 +31,5 @@ def build_server():
             server.close()
 
 if __name__ == "__main__":
+    """"The script excutes from command line."""
     build_server()
