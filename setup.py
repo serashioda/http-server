@@ -12,10 +12,10 @@ setup(
     package_dir={'': 'src'},
     py_modules=['server', 'client'],
     extras_require={'test': ['pytest', 'pytest-watch', 'pytest-cov', 'tox']},
-    entry_point={
+    entry_points={
          'console_scripts': [
-            "server = server:build_server",
-            "client = client:create_client_socket"
+            "server = server:main",
+            "client = client:main"
          ]
     }
 )
