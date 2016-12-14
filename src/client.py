@@ -19,14 +19,12 @@ def create_client_socket(message):
     reply_complete = False
     msg = ''
     while msg[-10:] != "DISCONNECT":
-        print("listening")
         msg += client.recv(buffer_length).decode('utf8')
-        print("message received")
     print(msg[:-10])
     client.close()
+    return msg[:-10]
 
-create_client_socket("12345678")
 
-
-# if __name__ == "__main__":
-#     create_client_socket(sys.argv[0])
+if __name__ == "__main__":
+    """The script will execute from command line."""
+    create_client_socket(sys.argv[1])
