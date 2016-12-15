@@ -2,6 +2,7 @@
 """This is the echo server."""
 
 import socket
+import email.utils
 
 
 def build_server():
@@ -14,7 +15,7 @@ def build_server():
     server.listen(1)
 
     while True:
-        print("Server listening on port ", address[1], "...")
+        print("Server listening on port", address[1], "...")
         try:
             conn, addr = server.accept()
             buffer_length = 8
@@ -26,12 +27,30 @@ def build_server():
                 if len(part) < buffer_length:
                     break
             print(msg)
-            conn.sendall(msg.encode('utf8'))
+            full_message = response_ok() + msg
+            conn.sendall(full_message.encode('utf8'))
 
         except KeyboardInterrupt:
             conn.close()
             server.shutdown()
             server.close()
+
+
+def response_ok():
+    """Return 200 OK Response."""
+    response = 'HTTP/1.1 200 OK\r\n'
+    response += 'Content-Type: text/plain; charset=utf-8\r\n'
+    response += 'Date: ' + email.utils.formatdate(usegmt=True)
+    response += '\r\n\r\n'
+    return response
+
+
+def response_error():
+    """Return 404 Error Response."""
+    response = 'HTTP/1.1 500 Internal Server Error\r\n'
+    response += 'Content-Type: text/plain; charset=utf-8\r\n'
+    response += 'Date: ' + email.utils.formatdate(usegmt=True)
+    return response
 
 if __name__ == "__main__":
     """"The script excutes from command line."""
