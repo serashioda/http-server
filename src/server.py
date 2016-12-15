@@ -38,7 +38,7 @@ def build_server():
 
 def response_ok():
     """Return 200 OK Response."""
-    response = 'HTTP/1.1 200 OK\r\n'
+    response = u'HTTP/1.1 200 OK\r\n'
     response += 'Content-Type: text/plain; charset=utf-8'
     # response += 'Date: ' + email.utils.formatdate(usegmt=True)
     response += '\r\n\r\n'

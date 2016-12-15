@@ -17,9 +17,12 @@ def create_client_socket(message):
     except ConnectionRefusedError:
         print("Connection Refused")
     buffer_length = 8
-    msg = ''
+    msg = b''
     while msg[-10:] != "DISCONNECT":
-        msg += client.recv(buffer_length).decode('utf8')
+        try:
+            msg += client.recv(buffer_length).decode('utf8')
+        except (UnicodeDecodeError, TypeError):
+            msg += client.recv(buffer_length)
     print(msg[:-10])
     # client.shutdown()
     client.close()
