@@ -3,6 +3,7 @@
 
 import socket
 import sys
+import email.utils
 
 
 def create_client_socket(message):
@@ -27,8 +28,17 @@ def create_client_socket(message):
 
 def response_ok():
     """Return 200 OK Response."""
-    msg = 'HTTP/1.1 200 OK'
-    msg += 'Content-Type: text/plain'
+    msg = 'HTTP/1.1 200 OK\r\n'
+    msg += 'Content-Type: text/plain; charset=utf-8\r\n'
+    msg += email.utils.formatdate(usegmt=True)
+    return msg
+
+
+def response_error():
+    """Return 404 Error Response."""
+    msg = 'HTTP/1.1 500 Internal Server Error\r\n'
+    msg += 'Content-Type: text/plain; charset=utf-8\r\n'
+    msg += email.utils.formatdate(usegmt=True)
     return msg
 
 
