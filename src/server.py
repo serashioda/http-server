@@ -39,8 +39,8 @@ def build_server():
 def response_ok():
     """Return 200 OK Response."""
     response = 'HTTP/1.1 200 OK\r\n'
-    response += 'Content-Type: text/plain; charset=utf-8\r\n'
-    response += 'Date: ' + email.utils.formatdate(usegmt=True)
+    response += 'Content-Type: text/plain; charset=utf-8'
+    # response += 'Date: ' + email.utils.formatdate(usegmt=True)
     response += '\r\n\r\n'
     return response
 
@@ -48,8 +48,9 @@ def response_ok():
 def response_error():
     """Return 404 Error Response."""
     response = 'HTTP/1.1 500 Internal Server Error\r\n'
-    response += 'Content-Type: text/plain; charset=utf-8\r\n'
-    response += 'Date: ' + email.utils.formatdate(usegmt=True)
+    response += 'Content-Type: text/plain; charset=utf-8'
+    # response += 'Date: ' + email.utils.formatdate(usegmt=True)
+    response += '\r\n\r\n'
     return response
 
 if __name__ == "__main__":
