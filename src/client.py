@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Client for echo server."""
 
 import socket
@@ -16,7 +17,6 @@ def create_client_socket(message):
     except ConnectionRefusedError:
         print("Connection Refused")
     buffer_length = 8
-    reply_complete = False
     msg = ''
     while msg[-10:] != "DISCONNECT":
         msg += client.recv(buffer_length).decode('utf8')
@@ -25,6 +25,11 @@ def create_client_socket(message):
     return msg[:-10]
 
 
+def main():
+    """Run create client socket from command line."""
+    create_client_socket(sys.argv[1])
+
+
 if __name__ == "__main__":
     """The script will execute from command line."""
-    create_client_socket(sys.argv[1])
+    main()
