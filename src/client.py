@@ -25,6 +25,13 @@ def create_client_socket(message):
     return msg[:-10]
 
 
+def response_ok():
+    """Return 200 OK Response."""
+    msg = 'HTTP/1.1 200 OK'
+    msg += 'Content-Type: text/plain'
+    return msg
+
+
 def main():
     """Run create client socket from command line."""
     create_client_socket(sys.argv[1])
