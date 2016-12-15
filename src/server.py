@@ -29,6 +29,8 @@ def build_server():
             conn.sendall(msg.encode('utf8'))
 
         except KeyboardInterrupt:
+            conn.close()
+            server.shutdown()
             server.close()
 
 if __name__ == "__main__":

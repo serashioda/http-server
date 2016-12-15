@@ -21,6 +21,7 @@ def create_client_socket(message):
     while msg[-10:] != "DISCONNECT":
         msg += client.recv(buffer_length).decode('utf8')
     print(msg[:-10])
+    client.shutdown()
     client.close()
     return msg[:-10]
 
