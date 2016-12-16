@@ -7,7 +7,7 @@ import sys
 
 def create_client_socket(message):
     """Function builds the client socket."""
-    server_info = socket.getaddrinfo('127.0.0.1', 4001)
+    server_info = socket.getaddrinfo('127.0.0.1', 4006)
     stream_info = [i for i in server_info if i[1] == socket.SOCK_STREAM][0]
     client = socket.socket(*stream_info[:3])
     try:
@@ -18,13 +18,10 @@ def create_client_socket(message):
         print("Connection Refused")
     buffer_length = 8
     msg = b''
-    while msg[-10:] != "DISCONNECT":
-        try:
-            msg += client.recv(buffer_length).decode('utf8')
-        except (UnicodeDecodeError, TypeError):
-            msg += client.recv(buffer_length)
+    while msg[-10:] != b"DISCONNECT":
+        msg += client.recv(buffer_length)
+    msg = msg.decode('utf8')
     print(msg[:-10])
-    # client.shutdown()
     client.close()
     return msg[:-10]
 

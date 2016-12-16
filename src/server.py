@@ -2,7 +2,6 @@
 """This is the echo server."""
 
 import socket
-import email.utils
 
 
 def build_server():
@@ -10,7 +9,7 @@ def build_server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 4001)
+    address = ('127.0.0.1', 4006)
     server.bind(address)
     server.listen(1)
 
@@ -19,13 +18,10 @@ def build_server():
         try:
             conn, addr = server.accept()
             buffer_length = 8
-            message_complete = False
             msg = ""
-            while not message_complete:
+            while msg[-10:] != "DISCONNECT":
                 part = conn.recv(buffer_length)
                 msg += part.decode('utf8')
-                if len(part) < buffer_length:
-                    break
             print(msg)
             full_message = response_ok() + msg
             conn.sendall(full_message.encode('utf8'))
