@@ -53,6 +53,18 @@ def response_error():
     response += '\r\n\r\n'
     return response
 
+
+def parse_request(request):
+    """."""
+    request = request.replace('\r\n', ' ').split()
+    if request[0] != 'GET':
+        return '405'
+    if request[2] != 'HTTP/1.1':
+        return '406'
+    if request[3] != 'HOST':
+        return '400'
+    return request[1]
+
 if __name__ == "__main__":
     """"The script excutes from command line."""
     build_server()
