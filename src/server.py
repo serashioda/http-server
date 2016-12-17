@@ -15,7 +15,7 @@ def build_server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 4006)
+    address = ('127.0.0.1', 4021)
     server.bind(address)
     server.listen(1)
 
@@ -24,19 +24,26 @@ def build_server():
         try:
             conn, addr = server.accept()
             buffer_length = 8
-            msg = ""
-            while msg[-10:] != "DISCONNECT":
+            msg = b''
+            msg_complete = False
+            while not msg_complete:
                 part = conn.recv(buffer_length)
-                msg += part.decode('utf8')
+                msg += part
+                if len(part) < buffer_length or not part:
+                    break
             print(msg)
+            msg = msg.decode('utf8')
             uri_or_error = parse_request(msg)
+            print(uri_or_error)
             if uri_or_error in ERRORS:
                 error_response = response_error(uri_or_error)
                 conn.sendall(error_response.encode('utf8'))
-                conn.shutdown()
+                # conn.shutdown()
                 conn.close()
-            full_message = response_ok()
-            conn.sendall(full_message.encode('utf8'))
+            else:
+                full_message = response_ok()
+                conn.sendall(full_message.encode('utf8'))
+                conn.close()
 
         except KeyboardInterrupt:
             conn.close()
@@ -57,6 +64,7 @@ def response_error(error):
     response = 'HTTP/1.1 ' + error + ' ' + ERRORS[error] + '\r\n'
     response += 'Content-Type: text/plain; charset=utf-8'
     response += '\r\n\r\n'
+    print(response)
     return response
 
 
