@@ -71,6 +71,8 @@ def resolve_uri(uri_or_error):
 
     elif os.path.isfile(file_path):
         #check the filetype 
+        file_type = file_path.split('.')[-1]
+        print('File Type:', file_type)
         #raise error if none
         return #file things
     else:
