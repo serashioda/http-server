@@ -7,7 +7,7 @@ import sys
 
 def create_client_socket(message):
     """Function builds the client socket."""
-    server_info = socket.getaddrinfo('127.0.0.1', 4021)
+    server_info = socket.getaddrinfo('127.0.0.1', 4022)
     stream_info = [i for i in server_info if i[1] == socket.SOCK_STREAM][0]
     client = socket.socket(*stream_info[:3])
     try:
@@ -18,15 +18,12 @@ def create_client_socket(message):
         print("Connection Refused")
     buffer_length = 8
     msg = b''
-    print('Hey!')
     msg_complete = False
     while not msg_complete:
-        print(msg)
         part = client.recv(buffer_length)
         msg += part
         if len(part) < buffer_length or not part:
             break
-    print(msg)
     msg = msg.decode('utf8')
     print(msg)
     client.close()

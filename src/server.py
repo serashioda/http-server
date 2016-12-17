@@ -15,7 +15,7 @@ def build_server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 4021)
+    address = ('127.0.0.1', 4022)
     server.bind(address)
     server.listen(1)
 
@@ -31,10 +31,11 @@ def build_server():
                 msg += part
                 if len(part) < buffer_length or not part:
                     break
-            print(msg)
+            print("first", msg)
             msg = msg.decode('utf8')
+            print("second", msg)
             uri_or_error = parse_request(msg)
-            print(uri_or_error)
+            print("uri_or_error", uri_or_error)
             if uri_or_error in ERRORS:
                 error_response = response_error(uri_or_error)
                 conn.sendall(error_response.encode('utf8'))
@@ -70,12 +71,16 @@ def response_error(error):
 
 def parse_request(request):
     """."""
-    request = request.replace('\r\n', ' ').split()
+    print("third", request)
+    request = request.replace('\\r\\n', ' ')
+    print("3.5ive", request)
+    request = request.split()
+    print("fourth", request)
     if request[0] != 'GET':
         return '405'
     if request[2] != 'HTTP/1.1':
         return '406'
-    if request[3] != 'HOST':
+    if request[3] != 'Host:':
         return '400'
     return request[1]
 
