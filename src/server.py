@@ -2,6 +2,7 @@
 """HTTP server receives requests and send back appropriate response."""
 
 import socket
+import os
 
 ERRORS = {
     '405': "Method Not Allowed",
@@ -9,6 +10,9 @@ ERRORS = {
     '400': "Bad Request"
 }
 
+FILETYPE = {
+    
+}
 
 def build_server():
     """Build server socket, listen for request, and return response."""
@@ -33,12 +37,19 @@ def build_server():
                     break
             msg = msg.decode('utf8')
             uri_or_error = parse_request(msg)
+
+
+
             if uri_or_error in ERRORS:
                 error_response = response_error(uri_or_error)
                 conn.sendall(error_response.encode('utf8'))
                 conn.close()
             else:
-                full_message = response_ok()
+
+                full_message = resolve_uri(uri_or_error)
+
+                #^goes in resolve uri
+                full_message = response_ok() + full_message
                 conn.sendall(full_message.encode('utf8'))
                 conn.close()
 
@@ -46,6 +57,26 @@ def build_server():
             conn.close()
             server.close()
 
+
+def resolve_uri(uri_or_error):
+    """Resolve the URI and return the appropriate message."""
+    file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), uri_or_error)
+    if os.path.isdir(file_path):
+        file_list = os.listdir(file_path)
+        files = ''
+        for file in file_list:
+            files += '<li>' + file + '</li>'
+        body_content = '<html><body><ul>{}</ul></body></html>'.format(files)
+        content_type = 'directory'
+
+    elif os.path.isfile(file_path):
+        #check the filetype 
+        #raise error if none
+        return #file things
+    else:
+        return something_else
+
+    return body_content, content_type
 
 def response_ok():
     """Return 200 OK Response."""
