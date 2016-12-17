@@ -29,7 +29,13 @@ def build_server():
                 part = conn.recv(buffer_length)
                 msg += part.decode('utf8')
             print(msg)
-            full_message = response_ok() + msg
+            uri_or_error = parse_request(msg)
+            if uri_or_error in ERRORS:
+                error_response = response_error(uri_or_error)
+                conn.sendall(error_response.encode('utf8'))
+                conn.shutdown()
+                conn.close()
+            full_message = response_ok()
             conn.sendall(full_message.encode('utf8'))
 
         except KeyboardInterrupt:
@@ -48,7 +54,7 @@ def response_ok():
 
 def response_error(error):
     """Return 404 Error Response."""
-    response = 'HTTP/1.1 ' + error + ' '+ ERRORS[error] + '\r\n'
+    response = 'HTTP/1.1 ' + error + ' ' + ERRORS[error] + '\r\n'
     response += 'Content-Type: text/plain; charset=utf-8'
     response += '\r\n\r\n'
     return response
