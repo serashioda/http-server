@@ -3,6 +3,12 @@
 
 import socket
 
+ERRORS = {
+    '405': "Method Not Allowed",
+    '406': "Not Acceptable",
+    '400': "Bad Request"
+}
+
 
 def build_server():
     """Build server socket and listen for response."""
@@ -36,16 +42,14 @@ def response_ok():
     """Return 200 OK Response."""
     response = u'HTTP/1.1 200 OK\r\n'
     response += 'Content-Type: text/plain; charset=utf-8'
-    # response += 'Date: ' + email.utils.formatdate(usegmt=True)
     response += '\r\n\r\n'
     return response
 
 
-def response_error():
+def response_error(error):
     """Return 404 Error Response."""
-    response = 'HTTP/1.1 500 Internal Server Error\r\n'
+    response = 'HTTP/1.1 ' + error + ' '+ ERRORS[error] + '\r\n'
     response += 'Content-Type: text/plain; charset=utf-8'
-    # response += 'Date: ' + email.utils.formatdate(usegmt=True)
     response += '\r\n\r\n'
     return response
 
