@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Client for echo server."""
+"""Client for HTTP server."""
 
 import socket
 import sys
@@ -7,7 +7,7 @@ import sys
 
 def create_client_socket(message):
     """Function builds the client socket."""
-    server_info = socket.getaddrinfo('127.0.0.1', 4022)
+    server_info = socket.getaddrinfo('127.0.0.1', 4020)
     stream_info = [i for i in server_info if i[1] == socket.SOCK_STREAM][0]
     client = socket.socket(*stream_info[:3])
     try:
