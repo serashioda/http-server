@@ -3,6 +3,7 @@
 
 import socket
 import os
+import base64
 
 ERRORS = {
     '405': "Method Not Allowed",
@@ -11,7 +12,12 @@ ERRORS = {
 }
 
 FILETYPE = {
-    
+    'jpg': 'image/jpg',
+    'jpeg': 'image/jpeg',
+    'txt': 'text/plain',
+    'gif': 'image/gif',
+    'png': 'image/png',
+    'py': 'text/plain'
 }
 
 def build_server():
@@ -37,9 +43,6 @@ def build_server():
                     break
             msg = msg.decode('utf8')
             uri_or_error = parse_request(msg)
-
-
-
             if uri_or_error in ERRORS:
                 error_response = response_error(uri_or_error)
                 conn.sendall(error_response.encode('utf8'))
@@ -67,18 +70,26 @@ def resolve_uri(uri_or_error):
         for file in file_list:
             files += '<li>' + file + '</li>'
         body_content = '<html><body><ul>{}</ul></body></html>'.format(files)
-        content_type = 'directory'
+        content_type = 'text/html'
 
     elif os.path.isfile(file_path):
-        #check the filetype 
-        file_type = file_path.split('.')[-1]
-        print('File Type:', file_type)
+        #check the filetype
+        file_extension = file_path.split('.')[-1]
+        print('File Type:', file_extension)
+        if FILETYPE[file_extension] == 'text/plain':
+            with open(file_path, 'r') as myfile:
+                body_content = myfile.read()
+            content_type = FILETYPE[file_extension]
         #raise error if none
-        return #file things
+        elif FILETYPE[file_extension].split('/')[0] == 'image':
+            with open(file_path, 'rb') as imageFile:
+                body_content = base64.b64encode(imageFile.read())
+            content_type = FILETYPE[file_extension]
     else:
         return something_else
 
     return body_content, content_type
+
 
 def response_ok():
     """Return 200 OK Response."""
