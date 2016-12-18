@@ -1,8 +1,7 @@
 # # -*- coding: utf-8 -*-
 """Test client socket with various messages."""
 
-
-def test_response_ok():
+def test_response_ok(""):
     """Test response_ok."""
     from server import response_ok
     result = response_ok()
@@ -35,3 +34,4 @@ def test_client_for_406_response():
     from client import create_client_socket
     response = create_client_socket("GET /index.html HTTP/1.0\r\nHost: www.example.com\r\n\r\n")
     assert response == 'HTTP/1.1 406 Not Acceptable\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n'
+

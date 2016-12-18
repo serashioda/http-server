@@ -29,7 +29,7 @@ def build_server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 4020)
+    address = ('127.0.0.1', 4021)
     server.bind(address)
     server.listen(1)
 
@@ -53,11 +53,13 @@ def build_server():
                 conn.close()
             else:
                 try:
-                    print("body content:" body_content)
+                    print("uri_or_error", uri_or_error)
                     body_content, content_type = resolve_uri(uri_or_error)
+                    print("body_content:", body_content)
                     full_message = response_ok(body_content, content_type)
                 except Exception:
                     print("errors that we havent built in yet")
+                    full_message = "nothing here"
                 conn.sendall(full_message.encode('utf8'))
                 conn.close()
         except KeyboardInterrupt:
@@ -93,7 +95,7 @@ def resolve_uri(uri_or_error):
             raise Exception('Filetype not supported.')
     else:
         raise Exception('File not found.')
-    return body_content, content_type
+    return (body_content, content_type)
 
 
 def response_ok(body_content, content_type):
