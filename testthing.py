@@ -38,5 +38,10 @@ def resolve_uri(uri_or_error):
             content_type = FILETYPE[file_extension]
             print('Content Type:', content_type)
             print('Body:', body_content)
+            response = u'HTTP/1.1 200 OK\r\n'
+            response += 'Content-Type: ' + content_type + '; charset=utf-8\r\n'
+            response += 'Content-Length: ' + str(len(body_content)) + '\r\n'
+            response += '\r\n\r\n'
+            print(response)
 
-resolve_uri('src/transferfiles/testdir/img.jpg')
+resolve_uri('src/transferfiles/testdir/../testme.txt')
