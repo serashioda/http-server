@@ -7,7 +7,7 @@ import sys
 
 def create_client_socket(message):
     """Function builds the client socket."""
-    server_info = socket.getaddrinfo('127.0.0.1', 4021)
+    server_info = socket.getaddrinfo('127.0.0.1', 4025)
     stream_info = [i for i in server_info if i[1] == socket.SOCK_STREAM][0]
     client = socket.socket(*stream_info[:3])
     try:

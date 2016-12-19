@@ -1,6 +1,8 @@
 # # -*- coding: utf-8 -*-
 """Test client socket with various messages."""
 
+import os
+
 body_content = 'I am a body content.'
 content_type = 'text/plain'
 
@@ -25,18 +27,51 @@ def test_parse_request():
     result = parse_request('GET /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n')
     assert result == '/index.html'
 
-"""TODO:
+
+def test_resolve_uri_not_supported():
+    """Test exception when audio file requested."""
+    from server import resolve_uri
+    file = 'transferfiles/testdir/testme.aiff'
+
+    print("CURRENT DIRECTORY: " + os.getcwd())
+    print("FILE EXISTS: " + str(os.path.isfile(file)))
+
+    try:
+        resolve_uri(file)
+    except Exception as ex:
+        assert str(ex) == 'Filetype not supported.'
+        return
+    assert False
+
+
+def test_resolve_uri_not_found():
+    """Test exception when audio file requested."""
+    from server import resolve_uri
+    file = 'transferfiles/testdir/testme2.aiff'
+
+    print("CURRENT DIRECTORY: " + os.getcwd())
+    print("FILE EXISTS: " + str(os.path.isfile(file)))
+
+    try:
+        resolve_uri(file)
+    except Exception as ex:
+        assert str(ex) == 'File not found.'
+        return
+    assert False
+
+"""
+TODO:
 ** test response_error:
 - test all error codes, and non-existing code (ie. 500), and when no error code passed in.
 
 ** test resolve_uri:
-- 
+-
 
 **overall functionality tests
 
 ** parse_error convert to http
 ** client stops receiving @ end of message (when len(body_content) is reached)
-
+"""
 
 # def test_client_for_405_response():
 #     """Test for ok response from server with empty message."""

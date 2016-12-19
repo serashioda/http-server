@@ -6,6 +6,7 @@ import os
 import base64
 
 ERRORS = {
+    '500': "Internal Server Error",
     '405': "Method Not Allowed",
     '406': "Not Acceptable",
     '400': "Bad Request",
@@ -29,7 +30,7 @@ def build_server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 4021)
+    address = ('127.0.0.1', 4025)
     server.bind(address)
     server.listen(1)
 
@@ -57,9 +58,10 @@ def build_server():
                     body_content, content_type = resolve_uri(uri_or_error)
                     print("body_content:", body_content)
                     full_message = response_ok(body_content, content_type)
-                except Exception:
-                    print("errors that we havent built in yet")
-                    full_message = "nothing here"
+                except Exception as ex:
+                    # Pick an error code based on the exception type
+                    error_code = detect_error_code(ex)
+                    full_message = response_error(error_code)
                 conn.sendall(full_message.encode('utf8'))
                 conn.close()
         except KeyboardInterrupt:
@@ -67,11 +69,24 @@ def build_server():
             server.close()
 
 
+def detect_error_code(ex):
+    """Detect error message (value of ERRORS) and id's error code(key of ERRORS)."""
+    if str(ex) == 'Filetype not supported.':
+        return '404'
+    elif str(ex) == 'File not found.':
+        return '404'
+    elif str(ex) == 'Unauthorized.':
+        return '401'
+    else:
+        return '500'
+
+
 def resolve_uri(uri_or_error):
     """Resolve the URI and return the appropriate message."""
     if '..' in uri_or_error:
         raise Exception('Unauthorized.')
     file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), uri_or_error)
+    print("LOOKING FOR FILE AT " + file_path)
     if os.path.isdir(file_path):
         file_list = os.listdir(file_path)
         files = ''
@@ -83,16 +98,21 @@ def resolve_uri(uri_or_error):
     elif os.path.isfile(file_path):
         file_extension = file_path.split('.')[-1]
         print('File Type:', file_extension)
+
+        if file_extension not in FILETYPE:
+            raise Exception('Filetype not supported.')
+
         if FILETYPE[file_extension].split('/')[0] == 'text':
             with open(file_path, 'r') as myfile:
                 body_content = myfile.read()
             content_type = FILETYPE[file_extension]
         elif FILETYPE[file_extension].split('/')[0] == 'image':
+            print('image')
             with open(file_path, 'rb') as imageFile:
                 body_content = base64.b64encode(imageFile.read())
             content_type = FILETYPE[file_extension]
-        else:
-            raise Exception('Filetype not supported.')
+        # else:
+        #     raise Exception('Filetype not supported.')
     else:
         raise Exception('File not found.')
     return (body_content, content_type)
