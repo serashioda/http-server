@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """HTTP server receives requests and send back appropriate response."""
-
+from __future__ import unicode_literals
 import socket
 import os
 import base64
@@ -11,7 +11,8 @@ ERRORS = {
     '406': "Not Acceptable",
     '400': "Bad Request",
     '404': "File Not Found",
-    '401': "Unauthorized"
+    '401': "Unauthorized",
+    '415': "Filetype not supported."
 }
 
 FILETYPE = {
@@ -30,7 +31,7 @@ def build_server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 4025)
+    address = ('127.0.0.1', 4021)
     server.bind(address)
     server.listen(1)
 
@@ -38,14 +39,11 @@ def build_server():
         print("Server listening on port", address[1], "...")
         try:
             conn, addr = server.accept()
-            buffer_length = 8
+            buffer_length = 16
             msg = b''
-            msg_complete = False
-            while not msg_complete:
+            while msg[-8:] != b'\\r\\n\\r\\n':
                 part = conn.recv(buffer_length)
                 msg += part
-                if len(part) < buffer_length or not part:
-                    break
             msg = msg.decode('utf8')
             uri_or_error = parse_request(msg)
             if uri_or_error in ERRORS:
@@ -54,14 +52,14 @@ def build_server():
                 conn.close()
             else:
                 try:
-                    print("uri_or_error", uri_or_error)
                     body_content, content_type = resolve_uri(uri_or_error)
-                    print("body_content:", body_content)
                     full_message = response_ok(body_content, content_type)
+                    print('full message: ', full_message)
                 except Exception as ex:
                     # Pick an error code based on the exception type
                     error_code = detect_error_code(ex)
                     full_message = response_error(error_code)
+                print('try to send that message back now')
                 conn.sendall(full_message.encode('utf8'))
                 conn.close()
         except KeyboardInterrupt:
@@ -72,7 +70,7 @@ def build_server():
 def detect_error_code(ex):
     """Detect error message (value of ERRORS) and id's error code(key of ERRORS)."""
     if str(ex) == 'Filetype not supported.':
-        return '404'
+        return '415'
     elif str(ex) == 'File not found.':
         return '404'
     elif str(ex) == 'Unauthorized.':
@@ -86,7 +84,6 @@ def resolve_uri(uri_or_error):
     if '..' in uri_or_error:
         raise Exception('Unauthorized.')
     file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), uri_or_error)
-    print("LOOKING FOR FILE AT " + file_path)
     if os.path.isdir(file_path):
         file_list = os.listdir(file_path)
         files = ''
@@ -97,22 +94,18 @@ def resolve_uri(uri_or_error):
 
     elif os.path.isfile(file_path):
         file_extension = file_path.split('.')[-1]
-        print('File Type:', file_extension)
-
-        if file_extension not in FILETYPE:
-            raise Exception('Filetype not supported.')
-
         if FILETYPE[file_extension].split('/')[0] == 'text':
             with open(file_path, 'r') as myfile:
                 body_content = myfile.read()
             content_type = FILETYPE[file_extension]
         elif FILETYPE[file_extension].split('/')[0] == 'image':
-            print('image')
             with open(file_path, 'rb') as imageFile:
-                body_content = base64.b64encode(imageFile.read())
+                body_content = base64.b64encode(imageFile.read()).decode('utf8')
             content_type = FILETYPE[file_extension]
-        # else:
-        #     raise Exception('Filetype not supported.')
+            print(content_type)
+        else:
+            print('filetype not supported')
+            raise Exception('Filetype not supported.')
     else:
         raise Exception('File not found.')
     return (body_content, content_type)
@@ -123,16 +116,17 @@ def response_ok(body_content, content_type):
     response = u'HTTP/1.1 200 OK\r\n'
     response += 'Content-Type: ' + content_type + '; charset=utf-8\r\n'
     response += 'Content-Length: ' + str(len(body_content)) + '\r\n'
-    response += '\r\n\r\n'
+    response += '\r\n'
     response += body_content
+
+    print('response',response)
     return response
 
 
 def response_error(error):
     """Return appropriate Error Response."""
     response = 'HTTP/1.1 ' + error + ' ' + ERRORS[error] + '\r\n'
-    response += 'Content-Type: text/plain; charset=utf-8'
-    response += '\r\n\r\n'
+    response += '\r\n'
     print(response)
     return response
 
@@ -148,6 +142,7 @@ def parse_request(request):
     if request[3] != 'Host:':
         return '400'
     return request[1]
+
 
 if __name__ == "__main__":
     """"The script excutes from command line."""
