@@ -35,7 +35,7 @@ def build_server(socket, addr):
     ##end build the socket
 
     while True:
-        print("Server listening on port", address[1], "...")
+        print("Server listening...")
         try:
         ##outer try for keyIntrpt
 
