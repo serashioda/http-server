@@ -34,47 +34,47 @@ def build_server(socket, addr):
     # server.listen(1)
     ##end build the socket
 
-    while True:
-        print("Server listening...")
+    # while True:
+    print("Server listening...")
+    # try:
+    ##outer try for keyIntrpt
+
+        #start accepting
+        # conn, addr = server.accept()
+
+    #setup the listening
+    buffer_length = 16
+    msg = b''
+
+    #start receiving
+    while msg[-8:] != b'\\r\\n\\r\\n':
+        part = socket.recv(buffer_length)
+        msg += part
+
+    #handle the message including sending message
+    msg = msg.decode('utf8')
+    uri_or_error = parse_request(msg)
+    if uri_or_error in ERRORS:
+        error_response = response_error(uri_or_error)
+        socket.sendall(error_response.encode('utf8'))
+    else:
         try:
-        ##outer try for keyIntrpt
+            body_content, content_type = resolve_uri(uri_or_error)
+            full_message = response_ok(body_content, content_type)
+            print('full message: ', full_message)
+        except Exception as ex:
+            # Pick an error code based on the exception type
+            error_code = detect_error_code(ex)
+            full_message = response_error(error_code)
+        print('try to send that message back now')
+        socket.sendall(full_message.encode('utf8'))
 
-            #start accepting
-            # conn, addr = server.accept()
-
-            #setup the listening
-            buffer_length = 16
-            msg = b''
-
-            #start receiving
-            while msg[-8:] != b'\\r\\n\\r\\n':
-                part = socket.recv(buffer_length)
-                msg += part
-
-            #handle the message including sending message
-            msg = msg.decode('utf8')
-            uri_or_error = parse_request(msg)
-            if uri_or_error in ERRORS:
-                error_response = response_error(uri_or_error)
-                socket.sendall(error_response.encode('utf8'))
-            else:
-                try:
-                    body_content, content_type = resolve_uri(uri_or_error)
-                    full_message = response_ok(body_content, content_type)
-                    print('full message: ', full_message)
-                except Exception as ex:
-                    # Pick an error code based on the exception type
-                    error_code = detect_error_code(ex)
-                    full_message = response_error(error_code)
-                print('try to send that message back now')
-                socket.sendall(full_message.encode('utf8'))
-
-            #shut off when thats done
-            socket.close()
+    #shut off when thats done
+    socket.close()
 
         #end outer try for keyboard interrupt
-        except KeyboardInterrupt:
-            socket.close()
+        # except KeyboardInterrupt:
+        #     socket.close()
             # server.close()
 
 
@@ -130,7 +130,7 @@ def response_ok(body_content, content_type):
     response += '\r\n'
     response += body_content
 
-    print('response',response)
+    print('response', response)
     return response
 
 
