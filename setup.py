@@ -14,7 +14,7 @@ setup(
     author_email='seras37@gmail.com, julienawilson@gmail.com',
     license='MIT',
     package_dir={'': 'src'},
-    py_modules=['server', 'client'],
+    py_modules=['server', 'client', 'con_server'],
     install_requires=requires,
     extras_require={'test': ['pytest', 'pytest-watch', 'pytest-cov', 'tox']},
     entry_points={
