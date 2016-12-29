@@ -27,7 +27,6 @@ FILETYPE = {
 }
 
 
-PORT = 4021
 
 
 def build_server():
@@ -37,7 +36,7 @@ def build_server():
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', PORT)
+    address = ('127.0.0.1', 4021)
     server.bind(address)
     server.listen(1)
     ##end build the socket
@@ -169,6 +168,6 @@ if __name__ == "__main__":
     from gevent.server import StreamServer
     from gevent.monkey import patch_all
     patch_all()
-    server = StreamServer(('127.0.0.1', 10000), echo)
-    print('Starting echo server on port 10000')
-    server.serve_forever()
+    server = StreamServer(('127.0.0.1', 4021), build_server)
+    print('Starting echo server on port 4021')
+    server.serve_forever()  
