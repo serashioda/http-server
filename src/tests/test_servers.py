@@ -2,12 +2,13 @@
 """Test client socket with various messages."""
 
 from __future__ import unicode_literals
-import os
+
 
 body_content = 'I am a body content.'
 content_type = 'text/plain'
 
 # -- server unit tests --
+
 
 def test_response_ok():
     """Test response_ok when request is valid."""
@@ -79,14 +80,14 @@ def test_con_response_error():
 
 def test_con_parse_request():
     """Test that uri is returned if request is valid on con_server."""
-    from server import parse_request
+    from con_server import parse_request
     result = parse_request('GET /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n')
     assert result == '/index.html'
 
 
 def test_con_parse_request_405():
     """Test that uri is returned if request is valid on con_server."""
-    from server import parse_request
+    from con_server import parse_request
     result = parse_request('GT /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n')
     assert result == '405'
 
