@@ -2,6 +2,10 @@
 
 from setuptools import setup
 
+requires = [
+    'gevent'
+]
+
 setup(
     name='http-server',
     description='Setting up an HTTP-Server.',
@@ -11,11 +15,13 @@ setup(
     license='MIT',
     package_dir={'': 'src'},
     py_modules=['server', 'client'],
+    install_requires=requires,
     extras_require={'test': ['pytest', 'pytest-watch', 'pytest-cov', 'tox']},
     entry_points={
          'console_scripts': [
             "server = server:build_server",
-            "client = client:main"
+            "client = client:main",
+            "con_server = con_server:main"
          ]
     }
 )
