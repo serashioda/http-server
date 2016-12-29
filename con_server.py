@@ -27,24 +27,39 @@ FILETYPE = {
 }
 
 
+PORT = 4021
+
+
 def build_server():
     """Build server socket, listen for request, and return response."""
+   
+    ##build the socket
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM,
                            socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 4021)
+    address = ('127.0.0.1', PORT)
     server.bind(address)
     server.listen(1)
+    ##end build the socket
 
     while True:
         print("Server listening on port", address[1], "...")
         try:
+        ##outer try for keyIntrpt
+
+            #start accepting
             conn, addr = server.accept()
+
+            #setup the listening
             buffer_length = 16
             msg = b''
+
+            #start receiving
             while msg[-8:] != b'\\r\\n\\r\\n':
                 part = conn.recv(buffer_length)
                 msg += part
+
+            #handle the message including sending message
             msg = msg.decode('utf8')
             uri_or_error = parse_request(msg)
             if uri_or_error in ERRORS:
@@ -62,7 +77,11 @@ def build_server():
                     full_message = response_error(error_code)
                 print('try to send that message back now')
                 conn.sendall(full_message.encode('utf8'))
+
+                #shut off when thats done
                 conn.close()
+
+        #end outer try for keyboard interrupt
         except KeyboardInterrupt:
             conn.close()
             server.close()
@@ -147,4 +166,9 @@ def parse_request(request):
 
 if __name__ == "__main__":
     """"The script excutes from command line."""
-    build_server()
+    from gevent.server import StreamServer
+    from gevent.monkey import patch_all
+    patch_all()
+    server = StreamServer(('127.0.0.1', 10000), echo)
+    print('Starting echo server on port 10000')
+    server.serve_forever()
