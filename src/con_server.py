@@ -154,12 +154,14 @@ def parse_request(request):
         return '400'
     return request[1]
 
-
-if __name__ == "__main__":
-    """"The script excutes from command line."""
+def main():
     from gevent.server import StreamServer
     from gevent.monkey import patch_all
     patch_all()
     server = StreamServer(('127.0.0.1', 4021), build_server)
     print('Starting echo server on port 4021')
     server.serve_forever()
+
+if __name__ == "__main__":
+    """"The script excutes from command line."""
+    main()

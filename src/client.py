@@ -37,15 +37,3 @@ def main():
 if __name__ == "__main__":
     """The script will execute from command line."""
     main()
-
-    
-"""
-    
-client.py
-import pdb; pdb.set_trace()
-
-if __name__ == "__main__":
-    """The script will execute from command line."""
-    incoming = sys.argv[1]
-    incoming = incoming.replace('crlf', '\r\n')
-    client(incoming)
