@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """HTTP server receives requests and send back appropriate response."""
 from __future__ import unicode_literals
-import socket
+# import socket
 import os
 import base64
-import gevent
 
 ERRORS = {
     '500': "Internal Server Error",
@@ -27,18 +26,12 @@ FILETYPE = {
 }
 
 
-
-
-def build_server():
+def build_server(socket, addr):
     """Build server socket, listen for request, and return response."""
-   
+
     ##build the socket
-    server = socket.socket(socket.AF_INET,
-                           socket.SOCK_STREAM,
-                           socket.IPPROTO_TCP)
-    address = ('127.0.0.1', 4021)
-    server.bind(address)
-    server.listen(1)
+    # server.bind(address)
+    # server.listen(1)
     ##end build the socket
 
     while True:
@@ -47,7 +40,7 @@ def build_server():
         ##outer try for keyIntrpt
 
             #start accepting
-            conn, addr = server.accept()
+            # conn, addr = server.accept()
 
             #setup the listening
             buffer_length = 16
@@ -55,7 +48,7 @@ def build_server():
 
             #start receiving
             while msg[-8:] != b'\\r\\n\\r\\n':
-                part = conn.recv(buffer_length)
+                part = socket.recv(buffer_length)
                 msg += part
 
             #handle the message including sending message
@@ -63,8 +56,7 @@ def build_server():
             uri_or_error = parse_request(msg)
             if uri_or_error in ERRORS:
                 error_response = response_error(uri_or_error)
-                conn.sendall(error_response.encode('utf8'))
-                conn.close()
+                socket.sendall(error_response.encode('utf8'))
             else:
                 try:
                     body_content, content_type = resolve_uri(uri_or_error)
@@ -75,15 +67,15 @@ def build_server():
                     error_code = detect_error_code(ex)
                     full_message = response_error(error_code)
                 print('try to send that message back now')
-                conn.sendall(full_message.encode('utf8'))
+                socket.sendall(full_message.encode('utf8'))
 
-                #shut off when thats done
-                conn.close()
+            #shut off when thats done
+            socket.close()
 
         #end outer try for keyboard interrupt
         except KeyboardInterrupt:
-            conn.close()
-            server.close()
+            socket.close()
+            # server.close()
 
 
 def detect_error_code(ex):
@@ -170,4 +162,4 @@ if __name__ == "__main__":
     patch_all()
     server = StreamServer(('127.0.0.1', 4021), build_server)
     print('Starting echo server on port 4021')
-    server.serve_forever()  
+    server.serve_forever()
