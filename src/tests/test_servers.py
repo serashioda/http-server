@@ -7,6 +7,7 @@ import os
 body_content = 'I am a body content.'
 content_type = 'text/plain'
 
+# -- server unit tests --
 
 def test_response_ok():
     """Test response_ok when request is valid."""
@@ -50,32 +51,70 @@ def test_parse_request_400():
     assert result == '400'
 
 
-# def test_resolve_uri_not_supported():
-#     """Test exception when audio file requested."""
-#     from server import resolve_uri
-#     file = 'transferfiles/testdir/testme.aiff'
-
-#     print("CURRENT DIRECTORY: " + os.getcwd())
-#     print("FILE EXISTS: " + str(os.path.isfile(file)))
-
-#     try:
-#         resolve_uri(file)
-#     except Exception as ex:
-#         assert str(ex) == 'Filetype not supported.'
-
-
 def test_resolve_uri_not_found():
     """Test exception when audio file requested."""
     from server import resolve_uri
     file = 'transferfiles/testdir/testme2.aiff'
-
-    # print("CURRENT DIRECTORY: " + os.getcwd())
-    # print("FILE EXISTS: " + str(os.path.isfile(file)))
-
     try:
         resolve_uri(file)
     except Exception as ex:
         assert str(ex) == 'File not found.'
+
+
+# -- con_server unit tests --
+
+def test_con_response_ok():
+    """Test response_ok when request is valid on con_server."""
+    from con_server import response_ok
+    result = response_ok(body_content, content_type)
+    assert result == 'HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: 20\r\n\r\nI am a body content.'
+
+
+def test_con_response_error():
+    """Test response_error when request is invalid on con_server."""
+    from con_server import response_error
+    result = response_error('406')
+    assert result == 'HTTP/1.1 406 Not Acceptable\r\n\r\n'
+
+
+def test_con_parse_request():
+    """Test that uri is returned if request is valid on con_server."""
+    from server import parse_request
+    result = parse_request('GET /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n')
+    assert result == '/index.html'
+
+
+def test_con_parse_request_405():
+    """Test that uri is returned if request is valid on con_server."""
+    from server import parse_request
+    result = parse_request('GT /index.html HTTP/1.1\r\nHost: www.example.com\r\n\r\n')
+    assert result == '405'
+
+
+def test_con_parse_request_406():
+    """Test that uri is returned if request is valid on con_server."""
+    from con_server import parse_request
+    result = parse_request('GET /index.html HTTP/1.0\r\nHost: www.example.com\r\n\r\n')
+    assert result == '406'
+
+
+def test_con_parse_request_400():
+    """Test that uri is returned if request is valid on con_server."""
+    from con_server import parse_request
+    result = parse_request('GET /index.html HTTP/1.1\r\nHst: www.example.com\r\n\r\n')
+    assert result == '400'
+
+
+def test_con_resolve_uri_not_found():
+    """Test exception when audio file requested on con_server."""
+    from con_server import resolve_uri
+    file = 'transferfiles/testdir/testme2.aiff'
+    try:
+        resolve_uri(file)
+    except Exception as ex:
+        assert str(ex) == 'File not found.'
+
+# -- functional tests --
 
 
 def test_client_for_text_response():
