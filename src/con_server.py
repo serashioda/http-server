@@ -28,30 +28,18 @@ FILETYPE = {
 
 def build_server(socket, addr):
     """Build server socket, listen for request, and return response."""
-
-    ##build the socket
-    # server.bind(address)
-    # server.listen(1)
-    ##end build the socket
-
-    # while True:
     print("Server listening...")
-    # try:
-    ##outer try for keyIntrpt
 
-        #start accepting
-        # conn, addr = server.accept()
-
-    #setup the listening
+    """#setup the listening"""
     buffer_length = 16
     msg = b''
 
-    #start receiving
+    """#start receiving"""
     while msg[-8:] != b'\\r\\n\\r\\n':
         part = socket.recv(buffer_length)
         msg += part
 
-    #handle the message including sending message
+    """#handle the message including sending message"""
     msg = msg.decode('utf8')
     uri_or_error = parse_request(msg)
     if uri_or_error in ERRORS:
@@ -69,13 +57,8 @@ def build_server(socket, addr):
         print('try to send that message back now')
         socket.sendall(full_message.encode('utf8'))
 
-    #shut off when thats done
+    """#shut off when thats done"""
     socket.close()
-
-        #end outer try for keyboard interrupt
-        # except KeyboardInterrupt:
-        #     socket.close()
-            # server.close()
 
 
 def detect_error_code(ex):
@@ -154,7 +137,9 @@ def parse_request(request):
         return '400'
     return request[1]
 
+
 def main():
+    """Define main as entry function."""
     from gevent.server import StreamServer
     from gevent.monkey import patch_all
     patch_all()
