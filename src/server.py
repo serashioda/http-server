@@ -147,11 +147,3 @@ def parse_request(request):
 if __name__ == "__main__":
     """"The script excutes from command line."""
     build_server()
-    
-    
-"""
-----
-            
-stream_info = [i for i in destination_info if i[1] == socket.SOCK_STREAM][0]
-client = socket.socket(*stream_info[:3]) <-- *stream_info makes it ___(rolling?) variable
-
